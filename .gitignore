@@ -1,0 +1,4 @@
+tests/build/
+*.o
+*.obj
+a.out

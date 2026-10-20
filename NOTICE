@@ -1,0 +1,64 @@
+MiniOpus
+Copyright 2026 Luigi Pizzolito
+
+This product includes software developed as part of the MiniOpus project
+(https://github.com/Luigi-Pizzolito/MiniOpus), licensed under the Apache
+License, Version 2.0.
+
+Attribution and provenance of the code in this repository
+--------------------------------------------------------
+
+1. Ogg demuxer (miniopus.c, "ogg demuxer" section)
+
+   A C translation of micro-ogg-demuxer's OggDemuxer class.
+
+   micro-ogg-demuxer
+   Copyright 2025 Kevin Ahrendt
+   Licensed under the Apache License, Version 2.0.
+   https://github.com/esphome-libs/micro-ogg-demuxer
+   (an esphome-libs / Open Home Foundation project)
+
+   The port keeps the original's states, functions and result codes
+   (EXPECT_HEADER / ACCUM_HEADER / PROCESS_SEGMENTS, zero-copy packet return,
+   bounded assembly buffer with oversized-packet skipping, streaming raw-body
+   mode, BOS/serial/page-sequence/continuation/EOS validation, resetForSeek and
+   the mode-switch guard), so the two sources can be read side by side. The
+   result codes are micro-ogg's numeric values unchanged; their names carry
+   MiniOpus's MOGG_RES_ prefix where micro-ogg writes OGG_.
+
+2. Ogg page access, granule bisection, seek chain (miniopus.c, "page-level
+   reads", "granule math", "granule bisection", "seek" sections) and the
+   streaming Vorbis-comment parser
+
+   Ported from UMP-STMH7, an STM32H7 music player by the same author as MiniOpus:
+   App/audio/decoders/opus/{opus.c, ogg_pages.{h,c}, ogg_shim.{h,cpp},
+   opus_meta.{h,c}}. Those files are the author's own work; the author licenses
+   them here under the Apache License, Version 2.0, and that grant covers
+   everyone - including the author's previous PolyForm-licensed copies.
+
+   UMP-STMH7
+   Copyright 2026 Luigi Pizzolito
+
+   The engineering lessons recorded in UMP-STMH7's change notes (C1, C6, C24,
+   C27) are the reason several behaviours here look fussy: pre-skip trimmed in
+   float units, a decode scratch sized for two channels of one 60 ms packet, a
+   header-slice budget that fails an open instead of falling through mid-packet,
+   page-granule hops over granule -1 pages, and a comment header parsed from
+   declared lengths without ever reading the album art. Each is commented where
+   it appears.
+
+3. libopus (external dependency, not included in this repository)
+
+   Opus codec
+   Copyright 2001 - 2026 Xiph.Org Foundation and contributors
+   BSD-3-Clause
+   https://git.xiph.org/?p=opus.git
+
+   MiniOpus links against it; it is not redistributed here.
+
+4. Test fixtures and reference implementations
+
+   The test suite encodes its own Ogg Opus fixtures with MiniOpus's own muxer.
+   Where the suite cross-checks against a reference, it links against
+   opusfile (Copyright 2012-2026 Xiph.Org Foundation, BSD-3-Clause) when
+   pkg-config finds it; the cross-checks are skipped when it is absent.
